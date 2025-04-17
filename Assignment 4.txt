@@ -1,0 +1,135 @@
+import React, {useState} from 'react';
+import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import type {PropsWithChildren} from 'react';
+
+const BOX_SIZE = 50;
+const BOX_SPACING = 0;
+
+const FlexDirectionBasics = () => {
+  const [layoutMode, setLayoutMode] = useState('column');
+
+  const boxes = ['powderblue', 'skyblue', 'steelblue'];
+
+  const isDiagonal = layoutMode === 'diagonal';
+
+  return (
+    <PreviewLayout
+      label="Layout Mode"
+      values={['column', 'row', 'column-reverse', 'row-reverse', 'diagonal']}
+      selectedValue={layoutMode}
+      setSelectedValue={setLayoutMode}>
+      {isDiagonal ? (
+        <View style={{flex: 1, position: 'relative'}}>
+          {boxes.map((color, index) => (
+            <View
+              key={index}
+              style={{
+                position: 'absolute',
+                top: index * (BOX_SIZE + BOX_SPACING),
+                left: index * (BOX_SIZE + BOX_SPACING),
+                width: BOX_SIZE,
+                height: BOX_SIZE,
+                backgroundColor: color,
+              }}
+            />
+          ))}
+        </View>
+      ) : (
+        boxes.map((color, index) => (
+          <View
+            key={index}
+            style={[styles.box, {backgroundColor: color}]}
+          />
+        ))
+      )}
+    </PreviewLayout>
+  );
+};
+
+type PreviewLayoutProps = PropsWithChildren<{
+  label: string;
+  values: string[];
+  selectedValue: string;
+  setSelectedValue: (value: string) => void;
+}>;
+
+const PreviewLayout = ({
+  label,
+  children,
+  values,
+  selectedValue,
+  setSelectedValue,
+}: PreviewLayoutProps) => (
+  <View style={{padding: 10, flex: 1}}>
+    <Text style={styles.label}>{label}</Text>
+    <View style={styles.row}>
+      {values.map(value => (
+        <TouchableOpacity
+          key={value}
+          onPress={() => setSelectedValue(value)}
+          style={[styles.button, selectedValue === value && styles.selected]}>
+          <Text
+            style={[
+              styles.buttonLabel,
+              selectedValue === value && styles.selectedLabel,
+            ]}>
+            {value}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+    <View
+      style={[
+        styles.container,
+        selectedValue !== 'diagonal' && {flexDirection: selectedValue},
+      ]}>
+      {children}
+    </View>
+  </View>
+);
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 8,
+    backgroundColor: 'aliceblue',
+  },
+  box: {
+    width: 50,
+    height: 50,
+  },
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  button: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 4,
+    backgroundColor: 'oldlace',
+    alignSelf: 'flex-start',
+    marginHorizontal: '1%',
+    marginBottom: 6,
+    minWidth: '30%',
+    textAlign: 'center',
+  },
+  selected: {
+    backgroundColor: 'coral',
+  },
+  buttonLabel: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: 'coral',
+    textAlign: 'center',
+  },
+  selectedLabel: {
+    color: 'white',
+  },
+  label: {
+    textAlign: 'center',
+    marginBottom: 10,
+    fontSize: 24,
+  },
+});
+
+export default FlexDirectionBasics;
